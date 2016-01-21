@@ -3,7 +3,7 @@
 module PlayingCards
     ( Suit(..)
     , Rank(..)
-    , Card
+    , Card(..)
     , Deck
     , generateDeck
     , shuffleDeck

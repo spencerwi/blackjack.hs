@@ -1,8 +1,8 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Blackjack
-    ( Game
-    , Player
+    ( Game(..)
+    , Player(..)
     , hit
     , stand
     , determineWinner
@@ -20,7 +20,7 @@ data Game = Game
     , humanHand :: [Card]
     , cpuHand   :: [Card] 
     , nextPlayer :: Player
-    } deriving (Show)
+    } deriving (Show, Eq)
 
 initialGameState :: RandomGen g => g -> Game
 initialGameState suppliedRNG = Game 
