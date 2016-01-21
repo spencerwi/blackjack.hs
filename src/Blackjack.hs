@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Lib
+module Blackjack
     ( Game
     , Player
     , hit
@@ -10,7 +10,7 @@ module Lib
     , initialGameState
     ) where
 
-import System.Random (StdGen)
+import System.Random (RandomGen)
 import PlayingCards
 
 data Player = Human | CPU deriving (Show, Eq)
@@ -19,16 +19,14 @@ data Game = Game
     { deck      :: Deck 
     , humanHand :: [Card]
     , cpuHand   :: [Card] 
-    , rng       :: StdGen
     , nextPlayer :: Player
     } deriving (Show)
 
-initialGameState :: StdGen -> Game
+initialGameState :: RandomGen g => g -> Game
 initialGameState suppliedRNG = Game 
-    { deck = (generateDeck)
+    { deck = (shuffleDeck suppliedRNG generateDeck)
     , humanHand = []
     , cpuHand = []
-    , rng = suppliedRNG
     , nextPlayer = Human
     }
 
@@ -37,10 +35,14 @@ swapPlayer Human = CPU
 swapPlayer CPU = Human
 
 hit :: Game -> Game
-hit gameState = gameState { deck = updatedDeck, rng = updatedRNG, humanHand = newHumanHand, cpuHand = newCPUHand, nextPlayer = (swapPlayer nextPlayer) }
+hit (Game {deck, humanHand, cpuHand, nextPlayer}) = Game 
+    { deck       = updatedDeck
+    , humanHand  = newHumanHand
+    , cpuHand    = newCPUHand
+    , nextPlayer = (swapPlayer nextPlayer) 
+    }
     where 
-        Game { deck, humanHand, cpuHand, rng, nextPlayer } = gameState
-        (drawnCard, updatedDeck, updatedRNG) = drawCard deck rng
+        (drawnCard, updatedDeck) = drawCard deck 
         (newCPUHand, newHumanHand) = case nextPlayer of
                                         Human   -> (cpuHand, humanHand ++ [drawnCard])
                                         CPU     -> (cpuHand ++ [drawnCard], humanHand)

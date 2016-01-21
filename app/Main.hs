@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Blackjack
 import System.Random (getStdGen)
 
 data GameAction = Hit | Stand

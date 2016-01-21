@@ -1,17 +1,19 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module PlayingCards
-    ( Suit
-    , Rank
+    ( Suit(..)
+    , Rank(..)
     , Card
     , Deck
     , generateDeck
+    , shuffleDeck
     , drawCard
     , cardValue
     ) where
 
 import Data.Maybe (fromJust)
 import System.Random
+import System.Random.Shuffle (shuffle')
 
 data Suit = Hearts | Diamonds | Clubs | Spades deriving (Show, Eq)
 data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King deriving (Show, Eq, Ord)
@@ -23,7 +25,6 @@ instance Show Card where
     show (Card {rank, suit}) = (show rank) ++ " of " ++ (show suit)
 
 type Deck = [Card]
-
 
 generateDeck :: Deck
 generateDeck = concat $ map generateCardsForSuit [Hearts, Diamonds, Clubs, Spades] 
@@ -45,12 +46,12 @@ generateDeck = concat $ map generateCardsForSuit [Hearts, Diamonds, Clubs, Spade
         mkRank 13 = Just King
         mkRank _  = Nothing 
 
-drawCard :: Deck -> StdGen -> (Card, Deck, StdGen)
-drawCard deck rng = (drawnCard, updatedDeck, updatedRNG)
-    where
-        (cardNumber, updatedRNG) = randomR (0, (length deck) - 1) rng
-        drawnCard = deck !! cardNumber
-        updatedDeck = filter ((/=) drawnCard) deck
+shuffleDeck :: RandomGen g => g -> Deck -> Deck
+shuffleDeck _ [] = []
+shuffleDeck rng deck = shuffle' deck (length deck) rng
+
+drawCard :: Deck -> (Card, Deck)
+drawCard (drawnCard:updatedDeck) = (drawnCard, updatedDeck)
 
 cardValue :: Card -> Int
 cardValue (Card {rank}) = case rank of
