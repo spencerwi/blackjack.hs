@@ -11,6 +11,7 @@ module Blackjack
     ) where
 
 import System.Random (RandomGen)
+import Data.List (maximumBy)
 import PlayingCards
 
 data Player = Human | CPU deriving (Show, Eq)
@@ -60,7 +61,7 @@ determineWinner (Game { humanHand, cpuHand }) =
     let humanHandValue = totalHandValue humanHand
         cpuHandValue = totalHandValue cpuHand
     in
-        if      humanHandValue > 21             then Human
-        else if cpuHandValue > 21               then CPU
-        else if (humanHandValue > cpuHandValue) then Human
-        else    CPU
+        if      humanHandValue > 21             then CPU
+        else if cpuHandValue   > 21             then Human
+        else if humanHandValue > cpuHandValue   then Human
+        else                                         CPU

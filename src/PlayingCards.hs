@@ -11,12 +11,12 @@ module PlayingCards
     , cardValue
     ) where
 
-import Data.Maybe (fromJust)
 import System.Random
 import System.Random.Shuffle (shuffle')
+import Control.Applicative ((<$>), (<*>))
 
-data Suit = Hearts | Diamonds | Clubs | Spades deriving (Show, Eq)
-data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King deriving (Show, Eq, Ord)
+data Suit = Hearts | Diamonds | Clubs | Spades deriving (Show, Eq, Enum)
+data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King deriving (Show, Eq, Ord, Enum)
 
 data Card = Card 
     { rank :: Rank
@@ -27,24 +27,7 @@ instance Show Card where
 type Deck = [Card]
 
 generateDeck :: Deck
-generateDeck = concat $ map generateCardsForSuit [Hearts, Diamonds, Clubs, Spades] 
-    where
-        generateCardsForSuit suit = map (\r -> Card (fromJust $ mkRank r) suit) [1..13]
-        mkRank :: Int -> Maybe Rank
-        mkRank 1  = Just Ace
-        mkRank 2  = Just Two
-        mkRank 3  = Just Three
-        mkRank 4  = Just Four
-        mkRank 5  = Just Five
-        mkRank 6  = Just Six
-        mkRank 7  = Just Seven
-        mkRank 8  = Just Eight
-        mkRank 9  = Just Nine
-        mkRank 10 = Just Ten
-        mkRank 11 = Just Jack
-        mkRank 12 = Just Queen
-        mkRank 13 = Just King
-        mkRank _  = Nothing 
+generateDeck = Card <$> [Ace .. King] <*> [Hearts .. Diamonds]
 
 shuffleDeck :: RandomGen g => g -> Deck -> Deck
 shuffleDeck _ [] = []
