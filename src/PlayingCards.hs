@@ -15,8 +15,8 @@ import System.Random
 import System.Random.Shuffle (shuffle')
 import Control.Applicative ((<$>), (<*>))
 
-data Suit = Hearts | Diamonds | Clubs | Spades deriving (Show, Eq, Enum)
-data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King deriving (Show, Eq, Ord, Enum)
+data Suit = Hearts | Diamonds | Clubs | Spades deriving (Show, Eq, Bounded, Enum)
+data Rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King deriving (Show, Eq, Ord, Bounded, Enum)
 
 data Card = Card 
     { rank :: Rank
@@ -27,7 +27,7 @@ instance Show Card where
 type Deck = [Card]
 
 generateDeck :: Deck
-generateDeck = Card <$> [Ace .. King] <*> [Hearts .. Diamonds]
+generateDeck = Card <$> [Ace .. King] <*> [Hearts .. Spades]
 
 shuffleDeck :: RandomGen g => g -> Deck -> Deck
 shuffleDeck _ [] = []
