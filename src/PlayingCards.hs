@@ -8,7 +8,6 @@ module PlayingCards
     , generateDeck
     , shuffleDeck
     , drawCard
-    , cardValue
     ) where
 
 import System.Random
@@ -36,15 +35,3 @@ shuffleDeck rng deck = shuffle' deck (length deck) rng
 drawCard :: Deck -> (Card, Deck)
 drawCard (drawnCard:updatedDeck) = (drawnCard, updatedDeck)
 
-cardValue :: Card -> Int
-cardValue (Card {rank}) = case rank of
-                            Ace -> 1
-                            Two -> 2
-                            Three -> 3
-                            Four -> 4
-                            Five -> 5
-                            Six -> 6
-                            Seven -> 7
-                            Eight -> 8
-                            Nine -> 9
-                            _ -> 10

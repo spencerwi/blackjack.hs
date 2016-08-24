@@ -13,7 +13,8 @@ blankGameState :: Game
 blankGameState = Game { deck = [(Card Ace Spades)] 
                       , humanHand = [] 
                       , cpuHand = [] 
-                      , nextPlayer = Human 
+                      , nextPlayer = CPU 
+                      , isFinished = False
                       }
 
 
@@ -22,13 +23,14 @@ main :: IO ()
 main = hspec $ do
     describe "Blackjack" $ do
         describe "hit" $ do
-            it "draws a card from the deck and places it into the next player's hand, then switches turns" $ do
+            it "draws a card from the deck and places it into the next player's hand" $ do
                 let gameState = Game { deck = [(Card Ace Spades)] 
                                      , humanHand = [] 
                                      , cpuHand = [] 
                                      , nextPlayer = Human 
+                                     , isFinished = False
                                      }
-                (hit gameState) `shouldBe` (gameState {deck = [], humanHand = [(Card Ace Spades)], nextPlayer = CPU})
+                (hit gameState) `shouldBe` (gameState {deck = [], humanHand = [(Card Ace Spades)], nextPlayer = Human})
 
         describe "stand" $ do
             it "just switches turns without affecting the deck or player hands" $ do
@@ -36,8 +38,37 @@ main = hspec $ do
                                      , humanHand = [(Card Two Clubs)] 
                                      , cpuHand = [(Card Three Hearts)] 
                                      , nextPlayer = Human 
+                                     , isFinished = False
                                      }
                 (stand gameState) `shouldBe` gameState { nextPlayer = CPU }
+
+        describe "cardValue" $ do
+            context "when aces are high" $ do
+                it "translates a card to its given value" $ property $
+                    \card -> (cardValue True card) == case (rank card) of
+                                                    Ace -> 10
+                                                    Two -> 2
+                                                    Three -> 3
+                                                    Four -> 4
+                                                    Five -> 5
+                                                    Six -> 6
+                                                    Seven -> 7
+                                                    Eight -> 8
+                                                    Nine -> 9
+                                                    _ -> 10
+            context "when aces are low" $ do
+                it "translates a card to its given value" $ property $
+                    \card -> (cardValue False card) == case (rank card) of
+                                                    Ace -> 1
+                                                    Two -> 2
+                                                    Three -> 3
+                                                    Four -> 4
+                                                    Five -> 5
+                                                    Six -> 6
+                                                    Seven -> 7
+                                                    Eight -> 8
+                                                    Nine -> 9
+                                                    _ -> 10
 
         describe "totalHandValue" $ do
             it "sums the ranks of all cards in a given hand" $ do
@@ -89,19 +120,6 @@ main = hspec $ do
                 let deck = [(Card Ace Clubs)]
                 (drawCard deck) `shouldBe` ((Card Ace Clubs), [])
 
-        describe "cardValue" $ do
-            it "translates a card to its given value" $ property $
-                \card -> (cardValue card) == case (rank card) of
-                                                Ace -> 1
-                                                Two -> 2
-                                                Three -> 3
-                                                Four -> 4
-                                                Five -> 5
-                                                Six -> 6
-                                                Seven -> 7
-                                                Eight -> 8
-                                                Nine -> 9
-                                                _ -> 10
 
         -- TODO: How do I test a shuffle?
 
